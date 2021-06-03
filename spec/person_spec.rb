@@ -11,7 +11,7 @@ RSpec.describe Person do
 
     expect(person.class).to eq(Person)
     expect(person.name).to eq('John Doe')
-    expect(person.experiences).to eq(10)
+    expect(person.experience).to eq(10)
 
     expect(person.specialties.class).to eq(Array)
     expect(person.specialties.length).to eq(0)
