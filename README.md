@@ -46,12 +46,12 @@ pry(main) kathy.add_specialty(:astrophysics)
 pry(main) kathy.add_specialty(:quantum_mechanics)
 
 pry(main)> kathy.specialties
-#=>[:astrophysics, :quantum_mechanics] 
+#=>[:astrophysics, :quantum_mechanics]
 ```
 
 ### Iteration 2
 
-Use TDD to create a `Flotilla` class that responds to the following interaction pattern. For the `recommend_personnel` method, the 
+Use TDD to create a `Flotilla` class that responds to the following interaction pattern. For the `recommend_personnel` method, the
 `Flotilla` should recommend `Person`s that match that ships requirements. (A person matches the requirements if they have a specialty that matches a requirement and experience equal to or greater than the requirement)
 
 ```ruby
@@ -91,7 +91,7 @@ pry(main)> seventh_flotilla.ships
 
 pry(main) seventh_flotilla.add_ship(daedalus)
 
-pry(main)> seventh_flotilla.ships 
+pry(main)> seventh_flotilla.ships
 #=> [#<Spacecraft:0x00007ff88ea3fc30...>]
 
 pry(main)> kathy = Person.new('Kathy Chan', 10)
@@ -101,7 +101,7 @@ pry(main)> kathy.add_specialty(:astrophysics)
 
 pry(main)> kathy.add_specialty(:quantum_mechanics)
 
-pry(main)> polly = Person.new('Polly Parker', 4)
+pry(main)> polly = Person.new('Polly Parker', 8)
 #=> #<Person:0x00007ff88ea374f9...>
 
 pry(main)> polly.add_specialty(:operations)
@@ -144,7 +144,7 @@ pry(main)> odyssey.add_requirement({operations: 6})
 pry(main)> odyssey.add_requirement({maintenance: 3})
 
 pry(main)> seventh_flotilla.recommend_personnel(odyssey)
-#=> [#<Person:0x000013b59506e2e8...>]
+#=> [#<Person:0x00007ff88ea374f9...>]
 ```
 
 ### Iteration 3
@@ -188,7 +188,7 @@ pry(main)> kathy.add_specialty(:astrophysics)
 
 pry(main)> kathy.add_specialty(:quantum_mechanics)
 
-pry(main)> polly = Person.new('Polly Parker', 4)
+pry(main)> polly = Person.new('Polly Parker', 8)
 #=> #<Person:0x00007ff88ea374f9...>
 
 pry(main)> polly.add_specialty(:operations)
@@ -224,7 +224,7 @@ pry(main) seventh_flotilla.add_ship(daedalus)
 
 pry(main) seventh_flotilla.add_ship(odyssey)
 
-pry(main)> seventh_flotilla.ships 
+pry(main)> seventh_flotilla.ships
 #=> [#<Spacecraft:0x00007ff88ea3fc30...>, #<Spacecraft:0x00007ff88ea3fc30...>]
 
 pry(main)> seventh_flotilla.personnel_by_ship
@@ -236,9 +236,9 @@ pry(main)> seventh_flotilla.personnel_by_ship
 
 ### Iteration 4
 
-Use TDD to update your `Flotilla` class to respond to the following interaction pattern. 
+Use TDD to update your `Flotilla` class to respond to the following interaction pattern.
 
-Notes: 
+Notes:
 * `ready_ships` returns an array of ship objects that have all of their requirements staffed and enough fuel. The method takes fuel
 as an argument.
 
