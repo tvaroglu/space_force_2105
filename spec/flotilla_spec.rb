@@ -79,4 +79,50 @@ RSpec.describe Flotilla do
     expect(recommendation.first.name).to eq('Polly')
   end
 
+  it 'can group qualified personnel by ship' do
+    seventh_flotilla = Flotilla.new({designation: 'Seventh Flotilla'})
+
+    daedalus = Spacecraft.new({name: 'Daedalus', fuel: 400})
+    requirements = [{astrophysics: 6}, {quantum_mechanics: 3}]
+    requirements.each { |requirement| daedalus.add_requirement(requirement) }
+    seventh_flotilla.add_ship(daedalus)
+
+    odyssey = Spacecraft.new({name: 'Odyssey', fuel: 300})
+    requirements = [{operations: 6}, {maintenance: 3}]
+    requirements.each { |requirement| odyssey.add_requirement(requirement) }
+    seventh_flotilla.add_ship(odyssey)
+
+    john = Person.new('John Doe', 10)
+    specialties = [:astrophysics, :quantum_mechanics]
+    specialties.each { |specialty| john.add_specialty(specialty) }
+
+    sampson = Person.new('Sampson Edwards', 7)
+    specialties.each { |specialty| sampson.add_specialty(specialty) }
+
+    polly = Person.new('Polly Parker', 8)
+    specialties = [:operations, :maintenance]
+    specialties.each { |specialty| polly.add_specialty(specialty) }
+
+    rover = Person.new('Rover Henriette', 1)
+    specialties.each { |specialty| rover.add_specialty(specialty) }
+
+    personnel = [john, sampson, polly, rover]
+    personnel.each { |person| seventh_flotilla.add_personnel(person) }
+
+
+    grouping = seventh_flotilla.personnel_by_ship
+    expect(grouping.class).to eq(Hash)
+    expect(grouping.keys.length).to eq(2)
+    expect(grouping.values.length).to eq(2)
+
+    expect(grouping.values.first.class).to eq(Array)
+    expect(grouping.values.first.length).to eq(2)
+    expect(grouping.values.first.first.name).to eq('John')
+    expect(grouping.values.first.last.name).to eq('Sampson')
+
+    expect(grouping.values.last.class).to eq(Array)
+    expect(grouping.values.last.length).to eq(1)
+    expect(grouping.values.last.first.name).to eq('Polly')
+  end
+
 end
