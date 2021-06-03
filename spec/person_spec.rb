@@ -24,8 +24,8 @@ RSpec.describe Person do
     specialties.each { |specialty| person.add_specialty(specialty) }
 
     expect(person.specialties.length).to eq(2)
-    expect(person.specialties.first).to eq(:astrophysics)
-    expect(person.specialties.last).to eq(:quantum_mechanics)
+    expect(person.specialties.first).to eq(specialties[0])
+    expect(person.specialties.last).to eq(specialties[1])
   end
 
 end
