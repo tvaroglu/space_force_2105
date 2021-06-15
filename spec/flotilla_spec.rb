@@ -30,145 +30,123 @@ RSpec.describe Flotilla do
     expect(seventh_flotilla.ships.length).to eq(1)
   end
 
-  it 'can add and recommend personnel' do
-    seventh_flotilla = Flotilla.new({designation: 'Seventh Flotilla'})
+  context 'personnel and ship qualifications' do
+    before :each do
+      @seventh_flotilla = Flotilla.new({designation: 'Seventh Flotilla'})
 
-    daedalus = Spacecraft.new({name: 'Daedalus', fuel: 400})
-    requirements = [{astrophysics: 6}, {quantum_mechanics: 3}]
-    requirements.each { |requirement| daedalus.add_requirement(requirement) }
+      @daedalus = Spacecraft.new({name: 'Daedalus', fuel: 400})
+      @requirements = [{astrophysics: 6}, {quantum_mechanics: 3}]
+      @requirements.each { |requirement| @daedalus.add_requirement(requirement) }
 
-    seventh_flotilla.add_ship(daedalus)
+      @seventh_flotilla.add_ship(@daedalus)
 
-    john = Person.new('John Doe', 10)
-    specialties = [:astrophysics, :quantum_mechanics]
-    specialties.each { |specialty| john.add_specialty(specialty) }
+      @odyssey = Spacecraft.new({name: 'Odyssey', fuel: 300})
+      @requirements = [{operations: 6}, {maintenance: 3}]
+      @requirements.each { |requirement| @odyssey.add_requirement(requirement) }
 
-    sampson = Person.new('Sampson Edwards', 7)
-    specialties.each { |specialty| sampson.add_specialty(specialty) }
-
-    polly = Person.new('Polly Parker', 8)
-    specialties = [:operations, :maintenance]
-    specialties.each { |specialty| polly.add_specialty(specialty) }
-
-    rover = Person.new('Rover Henriette', 1)
-    specialties.each { |specialty| rover.add_specialty(specialty) }
-
-    personnel = [john, sampson, polly, rover]
-    personnel.each { |person| seventh_flotilla.add_personnel(person) }
-
-    expect(seventh_flotilla.personnel.length).to eq(4)
-    data_validation = seventh_flotilla.personnel.all? do |person|
-      person.class == Person
+      @seventh_flotilla.add_ship(@odyssey)
     end
-    expect(data_validation).to be(true)
 
-    recommendation = seventh_flotilla.recommend_personnel(daedalus)
-    expect(recommendation.class).to eq(Array)
-    expect(recommendation.length).to eq(2)
-    expect(recommendation.first.name).to eq('John Doe')
-    expect(recommendation.last.name).to eq('Sampson Edwards')
+    it 'can add and recommend personnel' do
+      john = Person.new('John Doe', 10)
+      specialties = [:astrophysics, :quantum_mechanics]
+      specialties.each { |specialty| john.add_specialty(specialty) }
 
-    odyssey = Spacecraft.new({name: 'Odyssey', fuel: 300})
-    requirements = [{operations: 6}, {maintenance: 3}]
-    requirements.each { |requirement| odyssey.add_requirement(requirement) }
-    seventh_flotilla.add_ship(odyssey)
+      sampson = Person.new('Sampson Edwards', 7)
+      specialties.each { |specialty| sampson.add_specialty(specialty) }
 
-    recommendation = seventh_flotilla.recommend_personnel(odyssey)
-    expect(recommendation.class).to eq(Array)
-    expect(recommendation.length).to eq(1)
-    expect(recommendation.first.name).to eq('Polly Parker')
+      polly = Person.new('Polly Parker', 5)
+      specialties = [:operations, :maintenance]
+      specialties.each { |specialty| polly.add_specialty(specialty) }
+
+      rover = Person.new('Rover Henriette', 1)
+      specialties.each { |specialty| rover.add_specialty(specialty) }
+
+      personnel = [john, sampson, polly, rover]
+      personnel.each { |person| @seventh_flotilla.add_personnel(person) }
+
+      expect(@seventh_flotilla.personnel.length).to eq(4)
+      data_validation = @seventh_flotilla.personnel.all? do |person|
+        person.class == Person
+      end
+      expect(data_validation).to be(true)
+
+      recommendation = @seventh_flotilla.recommend_personnel(@daedalus)
+      expect(recommendation.class).to eq(Array)
+      expect(recommendation.length).to eq(2)
+      expect(recommendation.first.name).to eq('John Doe')
+      expect(recommendation.last.name).to eq('Sampson Edwards')
+
+      recommendation = @seventh_flotilla.recommend_personnel(@odyssey)
+      expect(recommendation.class).to eq(Array)
+      expect(recommendation.length).to eq(0)
+    end
+
+    it 'can group qualified personnel by ship' do
+      john = Person.new('John Doe', 10)
+      specialties = [:astrophysics, :quantum_mechanics]
+      specialties.each { |specialty| john.add_specialty(specialty) }
+
+      sampson = Person.new('Sampson Edwards', 7)
+      specialties.each { |specialty| sampson.add_specialty(specialty) }
+
+      polly = Person.new('Polly Parker', 8)
+      specialties = [:operations, :maintenance]
+      specialties.each { |specialty| polly.add_specialty(specialty) }
+
+      rover = Person.new('Rover Henriette', 1)
+      specialties.each { |specialty| rover.add_specialty(specialty) }
+
+      personnel = [john, sampson, polly, rover]
+      personnel.each { |person| @seventh_flotilla.add_personnel(person) }
+
+      grouping = @seventh_flotilla.personnel_by_ship
+      expect(grouping.class).to eq(Hash)
+      expect(grouping.keys.length).to eq(2)
+      expect(grouping.keys.first.class).to eq(Spacecraft)
+      expect(grouping.keys.last.class).to eq(Spacecraft)
+
+      expect(grouping.values.length).to eq(2)
+      expect(grouping.values.first.class).to eq(Array)
+      expect(grouping.values.first.length).to eq(2)
+      expect(grouping.values.first.first.name).to eq('John Doe')
+      expect(grouping.values.first.last.name).to eq('Sampson Edwards')
+
+      expect(grouping.values.last.class).to eq(Array)
+      expect(grouping.values.last.length).to eq(1)
+      expect(grouping.values.last.first.name).to eq('Polly Parker')
+    end
+
+    it 'can return ships ready for travel as per ship requirements' do
+      john = Person.new('John Doe', 10)
+      specialties = [:astrophysics, :quantum_mechanics]
+      specialties.each { |specialty| john.add_specialty(specialty) }
+
+      sampson = Person.new('Sampson Edwards', 7)
+      specialties.each { |specialty| sampson.add_specialty(specialty) }
+
+      polly = Person.new('Polly Parker', 6)
+      specialties = [:operations, :maintenance]
+      specialties.each { |specialty| polly.add_specialty(specialty) }
+
+      rover = Person.new('Rover Henriette', 1)
+      specialties.each { |specialty| rover.add_specialty(specialty) }
+
+      personnel = [john, sampson, polly, rover]
+      personnel.each { |person| @seventh_flotilla.add_personnel(person) }
+
+
+      recommendation = @seventh_flotilla.ready_ships(350)
+      expect(recommendation.class).to eq(Array)
+      expect(recommendation.length).to eq(1)
+      expect(recommendation.first.name).to eq('Daedalus')
+
+      recommendation = @seventh_flotilla.ready_ships(200)
+      expect(recommendation.class).to eq(Array)
+      expect(recommendation.length).to eq(2)
+      expect(recommendation.first.name).to eq('Daedalus')
+      expect(recommendation.last.name).to eq('Odyssey')
+    end
   end
-
-  it 'can group qualified personnel by ship' do
-    seventh_flotilla = Flotilla.new({designation: 'Seventh Flotilla'})
-
-    daedalus = Spacecraft.new({name: 'Daedalus', fuel: 400})
-    requirements = [{astrophysics: 6}, {quantum_mechanics: 3}]
-    requirements.each { |requirement| daedalus.add_requirement(requirement) }
-    seventh_flotilla.add_ship(daedalus)
-
-    odyssey = Spacecraft.new({name: 'Odyssey', fuel: 300})
-    requirements = [{operations: 6}, {maintenance: 3}]
-    requirements.each { |requirement| odyssey.add_requirement(requirement) }
-    seventh_flotilla.add_ship(odyssey)
-
-    john = Person.new('John Doe', 10)
-    specialties = [:astrophysics, :quantum_mechanics]
-    specialties.each { |specialty| john.add_specialty(specialty) }
-
-    sampson = Person.new('Sampson Edwards', 7)
-    specialties.each { |specialty| sampson.add_specialty(specialty) }
-
-    polly = Person.new('Polly Parker', 8)
-    specialties = [:operations, :maintenance]
-    specialties.each { |specialty| polly.add_specialty(specialty) }
-
-    rover = Person.new('Rover Henriette', 1)
-    specialties.each { |specialty| rover.add_specialty(specialty) }
-
-    personnel = [john, sampson, polly, rover]
-    personnel.each { |person| seventh_flotilla.add_personnel(person) }
-
-
-    grouping = seventh_flotilla.personnel_by_ship
-    expect(grouping.class).to eq(Hash)
-    expect(grouping.keys.length).to eq(2)
-    expect(grouping.keys.first.class).to eq(Spacecraft)
-    expect(grouping.keys.last.class).to eq(Spacecraft)
-
-    expect(grouping.values.length).to eq(2)
-    expect(grouping.values.first.class).to eq(Array)
-    expect(grouping.values.first.length).to eq(2)
-    expect(grouping.values.first.first.name).to eq('John Doe')
-    expect(grouping.values.first.last.name).to eq('Sampson Edwards')
-
-    expect(grouping.values.last.class).to eq(Array)
-    expect(grouping.values.last.length).to eq(1)
-    expect(grouping.values.last.first.name).to eq('Polly Parker')
-  end
-
-  it 'can return ships ready for travel as per ship requirements' do
-    seventh_flotilla = Flotilla.new({designation: 'Seventh Flotilla'})
-
-    daedalus = Spacecraft.new({name: 'Daedalus', fuel: 400})
-    requirements = [{astrophysics: 6}, {quantum_mechanics: 3}]
-    requirements.each { |requirement| daedalus.add_requirement(requirement) }
-    seventh_flotilla.add_ship(daedalus)
-
-    odyssey = Spacecraft.new({name: 'Odyssey', fuel: 300})
-    requirements = [{operations: 6}, {maintenance: 3}]
-    requirements.each { |requirement| odyssey.add_requirement(requirement) }
-    seventh_flotilla.add_ship(odyssey)
-
-    john = Person.new('John Doe', 10)
-    specialties = [:astrophysics, :quantum_mechanics]
-    specialties.each { |specialty| john.add_specialty(specialty) }
-
-    sampson = Person.new('Sampson Edwards', 7)
-    specialties.each { |specialty| sampson.add_specialty(specialty) }
-
-    polly = Person.new('Polly Parker', 5)
-    specialties = [:operations, :maintenance]
-    specialties.each { |specialty| polly.add_specialty(specialty) }
-
-    rover = Person.new('Rover Henriette', 1)
-    specialties.each { |specialty| rover.add_specialty(specialty) }
-
-    personnel = [john, sampson, polly, rover]
-    personnel.each { |person| seventh_flotilla.add_personnel(person) }
-
-
-    recommendation = seventh_flotilla.ready_ships(350)
-    expect(recommendation.class).to eq(Array)
-    expect(recommendation.length).to eq(1)
-    expect(recommendation.first.name).to eq('Daedalus')
-
-    recommendation = seventh_flotilla.ready_ships(200)
-    expect(recommendation.class).to eq(Array)
-    expect(recommendation.length).to eq(2)
-    expect(recommendation.first.name).to eq('Daedalus')
-    expect(recommendation.last.name).to eq('Odyssey')
-  end
-
 
 end

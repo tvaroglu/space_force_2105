@@ -16,17 +16,11 @@ class Flotilla
   end
 
   def recommend_personnel(ship)
-    result_arr = Array.new
-    ship.requirements.each do |requirement|
-      @personnel.each do |person|
-        person.specialties.each do |specialty|
-          if specialty == requirement.keys.first && person.experience >= requirement.values.first
-            result_arr << person
-          end
-        end
-      end
+    requirements = ship.requirements.map { |requirement| requirement.values.first }
+    personnel = @personnel.select { |person| person.experience >= requirements.max_by { |req| req } }
+    personnel.select do |person|
+      person.specialties.all? { |specialty| ship.requirements.to_s.include?(specialty.to_s) }
     end
-    result_arr.uniq
   end
 
   def personnel_by_ship
@@ -35,8 +29,7 @@ class Flotilla
 
   def ready_ships(minimum_fuel)
     result_arr = Array.new
-    groupings = personnel_by_ship
-    groupings.each do |ship, qualified_personnel|
+    personnel_by_ship.each do |ship, qualified_personnel|
       if qualified_personnel.length > 0 && ship.fuel >= minimum_fuel
         result_arr << ship
       end
