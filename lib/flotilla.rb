@@ -30,9 +30,7 @@ class Flotilla
   def ready_ships(minimum_fuel)
     result_arr = Array.new
     personnel_by_ship.each do |ship, qualified_personnel|
-      if qualified_personnel.length > 0 && ship.fuel >= minimum_fuel
-        result_arr << ship
-      end
+      result_arr << ship if qualified_personnel.length > 0 && ship.fuel >= minimum_fuel
     end
     result_arr
   end
